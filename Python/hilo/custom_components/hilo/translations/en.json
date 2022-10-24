@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "The Hilo integration interacts with the Hilo application. Hilo is a smart home product made by a subsidary of Hydro Quebec.",
+        "data": {
+          "username": "Hilo Username",
+          "password": "Hilo Password"
+        }
+      }
+    },
+    "error": {
+      "identifier_exists": "Account already registered",
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "unknown": "[%key:common::config_flow::error::unknown%]"
+    },
+    "abort": {
+      "already_configured": "This Hilo account is already in use."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure Hilo",
+        "data": {
+          "generate_energy_meters": "Generate energy meters",
+          "untarificated_devices": "Generate only total meters for each devices",
+          "hq_plan_name": "Hydro Quebec rate plan name ('rate d' or 'flex d')",
+          "scan_interval": "Scan interval (min: 15s)",
+          "log_traces": "Also log request data and websocket messages (requires debug log level on both the integration and pyhilo)",
+          "challenge_lock": "Lock climate entities during Hilo challenges, preventing any changes when a challenge is in progress.",
+          "track_unknown_sources": "Track unknown power sources in a separate energy sensor. This is a round approximation calculated when we get a reading from the Smart Energy Meter.",
+          "appreciation_phase": "Add an appreciation phase of X hours before the preheat phase."
+        }
+      }
+    }
+  }
+}
