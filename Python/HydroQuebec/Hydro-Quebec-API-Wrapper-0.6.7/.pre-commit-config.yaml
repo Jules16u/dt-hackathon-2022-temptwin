@@ -1,0 +1,53 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.3.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-docstring-first
+  - id: check-yaml
+    exclude: "^.gitlab-ci.yml$"
+  - id: check-yaml
+    args:
+      - --unsafe
+    files: "^.gitlab-ci.yml$"
+  - id: check-toml
+  - id: debug-statements
+  - id: check-ast
+
+- repo: https://github.com/psf/black
+  rev: 22.10.0
+  hooks:
+  - id: black
+    language_version: python3
+
+- repo: https://github.com/PyCQA/flake8/
+  rev: 5.0.4
+  hooks:
+  - id: flake8
+    additional_dependencies: [flake8-docstrings]
+
+- repo: https://github.com/PyCQA/isort
+  rev: 5.10.1
+  hooks:
+  - id: isort
+    args: ["--profile", "black", "--filter-files"]
+    #    additional_dependencies: [toml]
+
+- repo: https://github.com/PyCQA/doc8
+  rev: v1.0.0
+  hooks:
+  - id: doc8
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v0.981
+  hooks:
+  - id: mypy
+    args: [--strict, --pretty, --show-error-codes]
+    additional_dependencies:
+      - "types-pytz==2022.4.0.0"
+      - "types-PyYAML==6.0.12"
+      - "types-python-dateutil==2.8.19"
+      - "pytest-stub==1.1.0"
+      - "aiohttp==3.8.3"
+      - "aiocache==0.11.1"

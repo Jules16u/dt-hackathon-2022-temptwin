@@ -1,0 +1,281 @@
+variables:
+  TWINE_USERNAME: __token__
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+stages:
+- test
+- private_tests
+- private_tests_done
+- pypi
+
+cache:
+  key: pip-cache
+  paths:
+    - .cache/pip
+
+test:
+  stage: test
+  tags:
+  - hydroqc
+  image: registry.gitlab.com/hydroqc/hydroqc-base-container/build:20221017
+  script:
+    #- apt-get update && apt-get install git --no-install-recommends -y graphviz jq python3.10 python3-venv python3-pip git
+    - cat renovate.json |jq > /dev/null 2&>1 || ( echo "renovate.json not valid" && exit 1 )
+    #- pip install tox
+    - tox -e pylint,flake8,pydocstyle,typing,black,deps-conflict --parallel auto
+    - cat mypy-txt-report/index.txt
+  artifacts:
+    reports:
+      junit: mypy-junit.xml
+    paths:
+      - mypy-txt-report/
+      - mypy-html-report/
+      - classes.png
+      - classes.mmd
+      - classes.html
+      - packages.png
+      - packages.mmd
+      - packages.html
+  rules:
+    - if: '$CI_SKIP =~ /test/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - when: on_success
+
+.private_test_script: &private_test_script
+  stage: private_tests
+  tags:
+  - hydroqc
+  image: registry.gitlab.com/hydroqc/hydroqc-base-container/build:20221017
+  script:
+    #- apt update && apt install -y jq unzip curl
+    - >
+      OUTPUT=$(curl
+      --globoff
+      --header "Content-Type: application/json"
+      --header "PRIVATE-TOKEN: ${HYDROQC_SA_TOKEN}"
+      "https://gitlab.com/api/v4/projects/${PROJECT_ID}")
+    - PROJECT_PATH=$(echo ${OUTPUT} | jq -r .path_with_namespace)
+    - >
+      OUTPUT=$(curl
+      --globoff
+      --request POST
+      --header "Content-Type: application/json"
+      --header "PRIVATE-TOKEN: ${HYDROQC_SA_TOKEN}"
+      https://gitlab.com/api/v4/projects/${PROJECT_ID}/pipeline
+      --data '{ "ref": "main", "variables": [{ "key": "UPSTREAM_BRANCH", "value": "'${CI_COMMIT_REF_NAME}'" }, { "key": "UPSTREAM_COMMIT_SHA", "value": "'${CI_COMMIT_SHA}'" }, { "key": "UPSTREAM_REPO", "value": "'${CI_REPOSITORY_URL}'" }, { "key": "PYTEST_ARG", "value": "'${PYTEST_ARG}'" }] }')
+    - echo ${OUTPUT}
+    - PIPELINE_ID=$(echo ${OUTPUT} | jq -r .id)
+    - echo ${PIPELINE_ID}
+    - sleep 5
+    - >
+      OUTPUT=$(curl
+      --globoff
+      --header "Content-Type: application/json"
+      --header "PRIVATE-TOKEN: ${HYDROQC_SA_TOKEN}"
+      "https://gitlab.com/api/v4/projects/${PROJECT_ID}/pipelines/${PIPELINE_ID}/jobs")
+    - echo ${OUTPUT}
+    - JOB_ID=$(echo ${OUTPUT} | jq -r .[0].id)
+    - JOB_STATUS=$(echo ${OUTPUT} | jq -r .[0].status)
+    - |
+      while [ "${JOB_STATUS}" == "pending" ] || [ "${JOB_STATUS}" == "running" ]
+      do
+        echo "Waiting for pipeline ends"
+        sleep 10
+        OUTPUT=$(curl --globoff --header "Content-Type: application/json" --header "PRIVATE-TOKEN: ${HYDROQC_SA_TOKEN}" "https://gitlab.com/api/v4/projects/${PROJECT_ID}/pipelines/${PIPELINE_ID}/jobs")
+        JOB_STATUS=$(echo ${OUTPUT} | jq -r .[0].status)
+        echo ${JOB_STATUS}
+      done
+    - sleep 5
+    - JOB_END_DATE=$(echo ${OUTPUT}| jq -r .[0].finished_at)
+    - |
+      echo -e "\n\n\n"
+      echo '######################'
+      echo '###PRIVATE JOB LOGS###'
+      echo '######################'
+    - |
+      curl --location --header "PRIVATE-TOKEN: ${HYDROQC_SA_TOKEN}" "https://gitlab.com/api/v4/projects/${PROJECT_ID}/jobs/${JOB_ID}/trace"
+    - |
+      echo -e "\n"
+      echo '##########################'
+      echo '###END PRIVATE JOB LOGS###'
+      echo '##########################'
+      echo -e "\n"
+    - |
+      curl --location --output artifacts.zip --header "PRIVATE-TOKEN: ${HYDROQC_SA_TOKEN}" "https://gitlab.com/api/v4/projects/${PROJECT_ID}/jobs/${JOB_ID}/artifacts"
+    - unzip artifacts.zip
+    - COLOR=yellow
+    - |
+      if [ "${JOB_STATUS}" == "success" ]
+      then
+        export PIPELINE_COLOR=green
+      fi
+    - |
+      if [ "${JOB_STATUS}" == "failed" ]
+      then
+        export PIPELINE_COLOR=red
+      fi
+    - >
+      curl
+      --location
+      --output ${PROJECT_ID}-badge.svg
+      https://badgen.net/badge/scenario/${PROJECT_ID}/${PIPELINE_COLOR}
+    - echo https://badgen.net/badge/scenario/${PROJECT_ID}/${PIPELINE_COLOR}
+    - >
+      curl
+      --location
+      --output ${PROJECT_ID}-job-end-date.svg
+      https://badgen.net/badge/last%20run/${JOB_END_DATE}/blue
+    - if [ "${JOB_STATUS}" != "success" ] ; then exit 1 ; fi
+  artifacts:
+    when: always
+    paths:
+      - hydroqc/tests_result_junit.*.xml
+      - hydroqc/.coverage.*.dat
+      - "*-badge.svg"
+      - "*-job-end-date.svg"
+    reports:
+      junit: hydroqc/tests_result_junit.*.xml
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - when: on_success
+
+
+private_test_titilambert:
+  variables:
+    PROJECT_ID: 35085986
+  <<: *private_test_script
+  rules:
+    - if: '$CI_SKIP =~ /titilambert/'
+      when: never
+    - !reference [.private_test_script, rules]
+
+private_test_mdallaire1:
+  variables:
+    PROJECT_ID: 39503160
+  <<: *private_test_script
+  rules:
+    - if: '$CI_SKIP =~ /mdallaire1/'
+      when: never
+    - !reference [.private_test_script, rules]
+
+private_test_weimdall:
+  variables:
+    PROJECT_ID: 39038345
+  <<: *private_test_script
+  rules:
+    - if: '$CI_SKIP =~ /weimdall/'
+      when: never
+    - !reference [.private_test_script, rules]
+
+private_test_zepiaf:
+  variables:
+    PROJECT_ID: 39098670
+  <<: *private_test_script
+  rules:
+    - if: '$CI_SKIP =~ /zepiaf/'
+      when: never
+    - !reference [.private_test_script, rules]
+
+private_test_devzwf:
+  variables:
+    PROJECT_ID: 39310934
+  <<: *private_test_script
+  rules:
+    - if: '$CI_SKIP =~ /devzwf/'
+      when: never
+    - !reference [.private_test_script, rules]
+
+private_tests_done:
+  stage: private_tests_done
+  tags:
+  - hydroqc
+  image: registry.gitlab.com/hydroqc/hydroqc-base-container/build:20221017
+  script:
+    #- apt-get update && apt-get install --no-install-recommends -y python3.10 python3-venv python3-pip --no-install-recommends git
+    - echo "Private Tests done"
+    #- pip install tox
+    - find .
+    - mv -v hydroqc/.coverage* .
+    - mv -v hydroqc/*.xml .
+    - tox -e cov-combine,cov-report
+    - ls -al
+  coverage: '/TOTAL.*\s+(\d+%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - htmlcov
+      - coverage.xml
+      - "*-badge.svg"
+      - "*-job-end-date.svg"
+  rules:
+    - if: '$CI_SKIP =~ /done/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - when: on_success
+
+package:
+  stage: test
+  tags:
+  - hydroqc
+  image: registry.gitlab.com/hydroqc/hydroqc-base-container/build:20221017
+  script:
+    # Build a package with a version based on the commmit short sha
+    - pip install --upgrade pip
+    - pip install --upgrade build setuptools wheel twine setuptools_scm
+    - python3 -m build -o dist
+    - python3 -m twine check --strict dist/*
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python3 -m twine upload --verbose --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+  rules:
+    - if: '$CI_SKIP =~ /package/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
+      when: on_success
+    - when: never
+
+promote2pypi:
+  stage: pypi
+  tags:
+  - hydroqc
+  image: registry.gitlab.com/hydroqc/hydroqc-base-container/build:20221017
+  script:
+    # TODO: try to pull the good package from gitlab pypi repo
+    #       then change the version (promote)
+    #       then push it to pypi
+    #- rm -rf dist
+    #- mkdir -p dist
+    #- cd dist
+    #- VERSION=$(curl https://gitlab.com/api/v4/prokects/${CI_PROJECT_ID}/packages | jq '.[] | select(.pipelines[0].sha == "${CI_COMMIT_SHA}") | .version')
+    #- echo "We need to download version ${VERSION}"
+    #- |
+    #  pip download Hydro-Quebec-API-Wrapper==${CURRENT_VERSION}rc${} --extra-index-url https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/pypi/simple --no-deps --no-binary :all:
+    #- |
+    #  pip download Hydro-Quebec-API-Wrapper --extra-index-url https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/pypi/simple --no-deps
+    # TODO: open archives edit versions and rebuild archive
+    #- cd ..
+    #- apt-get update && apt-get install --no-install-recommends -y python3.10 python3-venv python3-pip git
+    # Build package that could be promoted
+    - pip install --upgrade pip
+    - pip install --upgrade build setuptools_scm twine
+    - python3 -m build -o dist
+    - python3 -m twine check --strict dist/*
+    - twine upload --verbose --non-interactive --repository pypi dist/*
+  rules:
+    - if: '$CI_SKIP =~ /pypi/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - when: never

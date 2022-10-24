@@ -1,0 +1,4 @@
+[paths]
+source =
+	./
+	/builds/*/hydroqc-test/hydroqc/
