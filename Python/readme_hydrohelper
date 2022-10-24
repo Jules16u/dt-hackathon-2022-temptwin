@@ -1,0 +1,10 @@
+Hydrohelper is a small python program that sends hydro quebec data to an open socket, used to receive data in Unity
+
+Follow install instructions here before running:
+https://gitlab.com/hydroqc/hydroqc
+
+Install
+pip install websockets
+
+Then run 
+python hydrohelper.py
