@@ -39,13 +39,12 @@ namespace Assets.NestAPI.Scripts
                 },
                 EnableDebug = true
             };
-            RestClient.Post<Post>(refreshTokenRequest)
+            RestClient.Post<RefreshTokenResponse>(refreshTokenRequest)
         .Then(res =>
         {
             // Set the access token on default request header
-            var refreshToken = JsonUtility.FromJson<RefreshTokenResponse>(res.body);
             LogMessage("Success", JsonUtility.ToJson("Refreshed access token", true));
-            RestClient.DefaultRequestHeaders["Authorization"] = $"Bearer {refreshToken.access_token}";
+            RestClient.DefaultRequestHeaders["Authorization"] = $"Bearer {res.access_token}";
             RestClient.DefaultRequestHeaders["Content-Type"] = "application/json";
         })
         .Catch(err => LogMessage("Error", err.Message));
