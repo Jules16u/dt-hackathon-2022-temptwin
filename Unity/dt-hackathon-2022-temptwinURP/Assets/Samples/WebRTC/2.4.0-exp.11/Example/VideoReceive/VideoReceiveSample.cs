@@ -106,7 +106,7 @@ namespace Unity.WebRTC.Samples
         private static RTCConfiguration GetSelectedSdpSemantics()
         {
             RTCConfiguration config = default;
-            config.iceServers = new[] {new RTCIceServer {urls = new[] {"https://smartdevicemanagement.googleapis.com/v1/enterprises/7541be0c-7ef7-4667-b76a-5c01b5429f09/devices/AVPHwEtqGeVoiII_hRjvxhisEfb3TI3h1quBDT0SLxqW6YKFxE7hOucya9h-rnrAWbpW5mRVLVE90TuVTO96HwWSYoXzhQ:executeCommand"}}};
+            config.iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}};
 
             return config;
         }

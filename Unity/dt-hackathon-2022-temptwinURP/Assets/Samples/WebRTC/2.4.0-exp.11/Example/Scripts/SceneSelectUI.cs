@@ -8,8 +8,8 @@ namespace Unity.WebRTC.Samples
 {
     internal static class WebRTCSettings
     {
-        public const int DefaultStreamWidth = 1920;
-        public const int DefaultStreamHeight = 1200;
+        public const int DefaultStreamWidth = 1280;
+        public const int DefaultStreamHeight = 720;
 
         private static bool s_limitTextureSize = true;
         private static Vector2Int s_StreamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
