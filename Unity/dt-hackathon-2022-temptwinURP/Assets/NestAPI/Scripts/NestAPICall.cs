@@ -23,7 +23,10 @@ public class NestAPICall : MonoBehaviour
         RequestHelper requestOptions = null;
         
         RestClient.Get(basePath).Then(res => {
+
+#if UNITY_EDITOR
             EditorUtility.DisplayDialog("Response", res.Text, "Ok");
+#endif
             Debug.Log(res.Text);
         });
     }
