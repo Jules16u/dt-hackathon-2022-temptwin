@@ -41,6 +41,9 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0",
-    "com.unity.digital-twins.data-streaming": "0.5.1"
+    "com.unity.digital-twins.data-streaming": "0.5.1",
+    "com.unity.digital-twins.common": "0.5.0",
+    "com.unity.digital-twins.storage": "0.3.0",
+    "com.unity.digital-twins.identity": "0.8.0"
   }
 }
