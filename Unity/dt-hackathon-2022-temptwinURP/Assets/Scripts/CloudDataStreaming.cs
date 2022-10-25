@@ -11,7 +11,7 @@ using Unity.DigitalTwins.Common.Runtime;
 [RequireComponent(typeof(DataStreamingBehaviour))]
 public class CloudDataStreaming : MonoBehaviour
 {
-    public string SceneName = "TempTwinHackweek2022";
+    public string DefaultScene = "TempTwinHackweek2022";
 
     CloudConfiguration m_CloudConfiguration;
     UnityHttpClient m_HttpClient;
@@ -32,6 +32,7 @@ public class CloudDataStreaming : MonoBehaviour
         // We will get our data from this service.
         m_Service = new ServiceHttpClient(m_HttpClient, m_Authenticator, DigitalTwinsPlayerSettings.Instance);
 
+        LoadScene(DefaultScene);
     }
 
     void OnDestroy()
