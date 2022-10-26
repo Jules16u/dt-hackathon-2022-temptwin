@@ -12,11 +12,11 @@ namespace Assets.NestAPI.Scripts
         TMP_Text TextMesh;
         public static string projectId = "7541be0c-7ef7-4667-b76a-5c01b5429f09";
 
-        private void Awake()
-        {
-            TextMesh = GetComponent<TMP_Text>();
-            StartCoroutine(UpdateText());
-        }
+        //private void Awake()
+        //{
+        //    TextMesh = GetComponent<TMP_Text>();
+        //    StartCoroutine(UpdateText());
+        //}
 
         public IEnumerator UpdateText()
         {

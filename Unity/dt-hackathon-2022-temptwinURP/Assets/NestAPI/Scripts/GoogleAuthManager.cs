@@ -55,7 +55,7 @@ namespace Assets.NestAPI.Scripts
                     { "client_id", clientId },
                     { "client_secret", clientSecret },
                     { "refresh_token", refreshToken},
-                    {"grant_type", "refresh_token" }
+                    { "grant_type", "refresh_token" }
                 },
                 EnableDebug = true
             };
