@@ -11,7 +11,7 @@ namespace Assets.NestAPI.Scripts
     public class Thermostat : MonoBehaviour
     {
         [SerializeField]
-        TMP_Text Information;
+        TMP_Text Mode;
 
         [SerializeField]
         TMP_Text Humidity;
@@ -22,7 +22,7 @@ namespace Assets.NestAPI.Scripts
         public static string projectId = "7541be0c-7ef7-4667-b76a-5c01b5429f09";
         public static string deviceId = "AVPHwEvrbIwSsnElHCEZ1YP4sTY58NdiZCNs-4a3wUhq1K1YnlEC5kSfzrDOaAvct9rZKU9P3wwFCuy4ph-qGQjpid0MZg";
         ThermostatTraits traits = new ThermostatTraits();
-        public float timer = 120f;
+        public float timer = 60f;
 
         private void Update()
         {
@@ -33,7 +33,7 @@ namespace Assets.NestAPI.Scripts
             else
             {
                 GetThermostatInfo();
-                timer = 120f;
+                timer = 60f;
             }
         }
 
@@ -65,29 +65,13 @@ namespace Assets.NestAPI.Scripts
             {
                 Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
                 EnableDebug = true,
-                Body = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"HEAT\"}}"
+                BodyString = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"HEAT\"}}"
             };
             RestClient.Post(setThermostatToHeating)
         .Then(res =>
         {
-            LogMessage("Success", JsonUtility.ToJson($"Set thermostat mode to HEAT", true));
-        })
-        .Catch(err => LogMessage("Error", err.Message));
-        }
-
-        public void SetCooling()
-        {
-            // Create a new request to set thermostat mode
-            var setThermostatToCooling = new RequestHelper
-            {
-                Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
-                EnableDebug = true,
-                Body = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"COOL\"}}"
-            };
-            RestClient.Post(setThermostatToCooling)
-        .Then(res =>
-        {
-            LogMessage("Success", JsonUtility.ToJson($"Set thermostat mode to COOL", true));
+            GetThermostatInfo();
+            timer = 60f;
         })
         .Catch(err => LogMessage("Error", err.Message));
         }
@@ -104,7 +88,8 @@ namespace Assets.NestAPI.Scripts
             RestClient.Post(turnOffThermostat)
         .Then(res =>
         {
-            LogMessage("Success", JsonUtility.ToJson($"Set thermostat mode to OFF", true));
+            GetThermostatInfo();
+            timer = 60f;
         })
         .Catch(err => LogMessage("Error", err.Message));
         }
@@ -120,7 +105,7 @@ namespace Assets.NestAPI.Scripts
             RestClient.Get(getThermostatInfoRequest).Then(res => 
             {
                 ParseTraits(res.Text);
-                Information.text = traits.Info;
+                Mode.text = traits.ThermostatMode;
                 Humidity.text = traits.Humidity;
                 Temperature.text= traits.Temperature;
 
@@ -151,30 +136,30 @@ namespace Assets.NestAPI.Scripts
             var connectivityIndex = input.IndexOf("status", connectivitySectionIndex);
             startIndex = input.IndexOf(':', connectivityIndex);
             endIndex = input.IndexOf('}', connectivityIndex);
-            var connectivity = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
+            var connectivity = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace(",", "");
             traits.Connectivity = connectivity;
 
             // Get ThermostatMode
             var thermostatModeSectionIndex = input.IndexOf("sdm.devices.traits.ThermostatMode");
             var thermostatModeIndex = input.IndexOf("mode", thermostatModeSectionIndex);
             startIndex = input.IndexOf(':', thermostatModeIndex);
-            endIndex = input.IndexOf('}', thermostatModeIndex);
-            var thermostatMode = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
-            traits.Connectivity = thermostatMode;
+            endIndex = input.IndexOf(',', thermostatModeIndex);
+            var thermostatMode = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace(",", "");
+            traits.ThermostatMode = thermostatMode;
 
             // Get ThermostatHvac
             var hvacSectionIndex = input.IndexOf("sdm.devices.traits.ThermostatHvac");
             var hvacIndex = input.IndexOf("status", hvacSectionIndex);
             startIndex = input.IndexOf(':', hvacIndex);
             endIndex = input.IndexOf('}', hvacIndex);
-            var hvac= input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
+            var hvac= input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace(",", "");
             traits.ThermostatHvac = hvac;
 
             // Get Temperature
             var tempIndex = input.IndexOf("ambientTemperatureCelsius");
             startIndex = input.IndexOf(':', tempIndex);
             endIndex = input.IndexOf('}', tempIndex);
-            var temp = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
+            var temp = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace(",", "");
             traits.Temperature = temp;       
         }
 
