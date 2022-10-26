@@ -10,7 +10,6 @@ namespace Assets.NestAPI.Scripts
 {
     public class Thermostat : MonoBehaviour
     {
-        //public string test;
         [SerializeField]
         TMP_Text Information;
 
@@ -23,10 +22,23 @@ namespace Assets.NestAPI.Scripts
         public static string projectId = "7541be0c-7ef7-4667-b76a-5c01b5429f09";
         public static string deviceId = "AVPHwEvrbIwSsnElHCEZ1YP4sTY58NdiZCNs-4a3wUhq1K1YnlEC5kSfzrDOaAvct9rZKU9P3wwFCuy4ph-qGQjpid0MZg";
         ThermostatTraits traits = new ThermostatTraits();
+        public float timer = 120f;
+
+        private void Update()
+        {
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+            }
+            else
+            {
+                GetThermostatInfo();
+                timer = 120f;
+            }
+        }
 
         private void Awake()
         {
-           // TextMesh = GetComponent<TMP_Text>();
             StartCoroutine(UpdateTextWithTemperature());
         }
 
@@ -124,14 +136,14 @@ namespace Assets.NestAPI.Scripts
             var infoIndex = input.IndexOf("customName");
             var startIndex = input.IndexOf(':', infoIndex);
             var endIndex = input.IndexOf('}', infoIndex);
-            var info = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "");
+            var info = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
             traits.Info = info;
 
             // Get Humidity
             var humidityIndex = input.IndexOf("ambientHumidityPercent");
             startIndex = input.IndexOf(':', humidityIndex);
             endIndex = input.IndexOf('}', humidityIndex);
-            var humidity = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "");
+            var humidity = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
             traits.Humidity = humidity;
 
             // Get Connectivity
@@ -139,7 +151,7 @@ namespace Assets.NestAPI.Scripts
             var connectivityIndex = input.IndexOf("status", connectivitySectionIndex);
             startIndex = input.IndexOf(':', connectivityIndex);
             endIndex = input.IndexOf('}', connectivityIndex);
-            var connectivity = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "");
+            var connectivity = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
             traits.Connectivity = connectivity;
 
             // Get ThermostatMode
@@ -147,7 +159,7 @@ namespace Assets.NestAPI.Scripts
             var thermostatModeIndex = input.IndexOf("mode", thermostatModeSectionIndex);
             startIndex = input.IndexOf(':', thermostatModeIndex);
             endIndex = input.IndexOf('}', thermostatModeIndex);
-            var thermostatMode = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "");
+            var thermostatMode = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
             traits.Connectivity = thermostatMode;
 
             // Get ThermostatHvac
@@ -155,14 +167,14 @@ namespace Assets.NestAPI.Scripts
             var hvacIndex = input.IndexOf("status", hvacSectionIndex);
             startIndex = input.IndexOf(':', hvacIndex);
             endIndex = input.IndexOf('}', hvacIndex);
-            var hvac= input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "");
+            var hvac= input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
             traits.ThermostatHvac = hvac;
 
             // Get Temperature
             var tempIndex = input.IndexOf("ambientTemperatureCelsius");
             startIndex = input.IndexOf(':', tempIndex);
             endIndex = input.IndexOf('}', tempIndex);
-            var temp = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "");
+            var temp = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace("\r\n", "");
             traits.Temperature = temp;       
         }
 
