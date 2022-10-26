@@ -19,6 +19,9 @@ namespace Assets.NestAPI.Scripts
         [SerializeField]
         TMP_Text Temperature;
 
+        [SerializeField]
+        TMP_Text SetTemperaturePoint;
+
         public static string projectId = "7541be0c-7ef7-4667-b76a-5c01b5429f09";
         public static string deviceId = "AVPHwEvrbIwSsnElHCEZ1YP4sTY58NdiZCNs-4a3wUhq1K1YnlEC5kSfzrDOaAvct9rZKU9P3wwFCuy4ph-qGQjpid0MZg";
         ThermostatTraits traits = new ThermostatTraits();
@@ -58,6 +61,42 @@ namespace Assets.NestAPI.Scripts
 #endif
         }
 
+        public void SetTempUp()
+        {
+            var newTemp = double.Parse(traits.Temperature) + 3;
+            var setTempUp = new RequestHelper
+            {
+                Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
+                EnableDebug = true,
+                BodyString = "{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + newTemp + "}}"
+            };
+            RestClient.Post(setTempUp)
+        .Then(res =>
+        {
+            traits.TemperatureSetpoint = newTemp.ToString();
+            SetTemperaturePoint.text = traits.TemperatureSetpoint;
+        })
+        .Catch(err => LogMessage("Error", err.Message));
+        }
+
+        public void SetTempDown()
+        {
+            var newTemp = double.Parse(traits.Temperature) - 3;
+            var setTempDown = new RequestHelper
+            {
+                Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
+                EnableDebug = true,
+                BodyString = "{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + newTemp + "}}"
+            };
+            RestClient.Post(setTempDown)
+        .Then(res =>
+        {
+            traits.TemperatureSetpoint = newTemp.ToString();
+            SetTemperaturePoint.text = traits.TemperatureSetpoint;
+        })
+        .Catch(err => LogMessage("Error", err.Message));
+        }
+
         public void SetHeating()
         {
             // Create a new request to set thermostat mode
@@ -70,8 +109,8 @@ namespace Assets.NestAPI.Scripts
             RestClient.Post(setThermostatToHeating)
         .Then(res =>
         {
-            GetThermostatInfo();
-            timer = 60f;
+            traits.ThermostatMode = "HEAT";
+            Mode.text = traits.ThermostatMode;
         })
         .Catch(err => LogMessage("Error", err.Message));
         }
@@ -88,8 +127,8 @@ namespace Assets.NestAPI.Scripts
             RestClient.Post(turnOffThermostat)
         .Then(res =>
         {
-            GetThermostatInfo();
-            timer = 60f;
+            traits.ThermostatMode = "OFF";
+            Mode.text = traits.ThermostatMode;
         })
         .Catch(err => LogMessage("Error", err.Message));
         }
@@ -102,16 +141,16 @@ namespace Assets.NestAPI.Scripts
                 EnableDebug = true
             };
 
-            RestClient.Get(getThermostatInfoRequest).Then(res => 
+            RestClient.Get(getThermostatInfoRequest).Then(res =>
             {
                 ParseTraits(res.Text);
                 Mode.text = traits.ThermostatMode;
                 Humidity.text = traits.Humidity;
-                Temperature.text= traits.Temperature;
+                Temperature.text = traits.Temperature;
+                SetTemperaturePoint.text = traits.TemperatureSetpoint;
 
             }).Catch(err => LogMessage("Error", err.Message));
         }
-
 
         private void ParseTraits(string input)
         {
@@ -152,15 +191,26 @@ namespace Assets.NestAPI.Scripts
             var hvacIndex = input.IndexOf("status", hvacSectionIndex);
             startIndex = input.IndexOf(':', hvacIndex);
             endIndex = input.IndexOf('}', hvacIndex);
-            var hvac= input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace(",", "");
+            var hvac = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace(",", "");
             traits.ThermostatHvac = hvac;
+
+            // Get ThermostatTemperatureSetpoint
+            if (traits.ThermostatMode != "OFF")
+            {
+                var temperatureSetpointSectionIndex = input.IndexOf("sdm.devices.traits.ThermostatTemperatureSetpoint");
+                var temperatureSetpointIndex = input.IndexOf("heatCelsius", temperatureSetpointSectionIndex);
+                startIndex = input.IndexOf(':', temperatureSetpointIndex);
+                endIndex = input.IndexOf(',', temperatureSetpointIndex);
+                var temperatureSetpoint = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace(",", "");
+                traits.TemperatureSetpoint = temperatureSetpoint;
+            }
 
             // Get Temperature
             var tempIndex = input.IndexOf("ambientTemperatureCelsius");
             startIndex = input.IndexOf(':', tempIndex);
             endIndex = input.IndexOf('}', tempIndex);
             var temp = input.Substring(startIndex + 1, endIndex - startIndex).Replace(" ", "").Replace("\"", "").Replace("}", "").Replace(",", "");
-            traits.Temperature = temp;       
+            traits.Temperature = temp;
         }
 
         public class ThermostatTraits
