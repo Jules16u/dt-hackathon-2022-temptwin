@@ -1,0 +1,397 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WorkspaceService.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.IArtifactUriProvider">
+            <summary>
+            Returns a uri for artifacts.
+            </summary>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.IArtifactUriProvider.GetArtifactUri(System.String,System.String)">
+            <summary>
+            Returns a uri for artifacts.
+            </summary>
+            <param name="datasetUid"></param>
+            <param name="versionId"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.ArtifactDto">
+            <summary>
+            Contains information related to an artifact in a dataset.
+            </summary>
+            <param name="Size">The size of the artifact, in bytes.</param>
+            <param name="Checksum">The checksum computed by the server.</param>
+            <param name="UserChecksum">The checksum supplied by the client which created the artifact.</param>
+            <param name="ArtifactVersionId">The unique identifier of this specific version of the artifact.</param>
+            <param name="ArtifactId">The unique identifier of the artifact.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.ArtifactDto.#ctor(System.UInt64,System.String,System.String,System.String,System.String)">
+            <summary>
+            Contains information related to an artifact in a dataset.
+            </summary>
+            <param name="Size">The size of the artifact, in bytes.</param>
+            <param name="Checksum">The checksum computed by the server.</param>
+            <param name="UserChecksum">The checksum supplied by the client which created the artifact.</param>
+            <param name="ArtifactVersionId">The unique identifier of this specific version of the artifact.</param>
+            <param name="ArtifactId">The unique identifier of the artifact.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.ArtifactDto.Size">
+            <summary>The size of the artifact, in bytes.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.ArtifactDto.Checksum">
+            <summary>The checksum computed by the server.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.ArtifactDto.UserChecksum">
+            <summary>The checksum supplied by the client which created the artifact.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.ArtifactDto.ArtifactVersionId">
+            <summary>The unique identifier of this specific version of the artifact.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.ArtifactDto.ArtifactId">
+            <summary>The unique identifier of the artifact.</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.CreateOrUpdateArtifactDto">
+            <summary>
+            An item that is part of UpdateArtifactsRequest.
+            </summary>
+            <param name="UserChecksum">
+            A checksum computed on the client side. This can be used to avoid uploading the same version of an artifact more than once. 
+            </param>
+            <param name="ContentType">The value that should be used as the content type header when uploading the artifact, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.CreateOrUpdateArtifactDto.#ctor(System.String,System.String)">
+            <summary>
+            An item that is part of UpdateArtifactsRequest.
+            </summary>
+            <param name="UserChecksum">
+            A checksum computed on the client side. This can be used to avoid uploading the same version of an artifact more than once. 
+            </param>
+            <param name="ContentType">The value that should be used as the content type header when uploading the artifact, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CreateOrUpdateArtifactDto.UserChecksum">
+            <summary>
+            A checksum computed on the client side. This can be used to avoid uploading the same version of an artifact more than once. 
+            </summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CreateOrUpdateArtifactDto.ContentType">
+            <summary>The value that should be used as the content type header when uploading the artifact, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.ArtifactUploadDto">
+            <summary>
+            Contains information required to upload an artifact to storage.
+            </summary>
+            <param name="UploadUri">The uri to which the file should be uploaded, using the `PUT` method.</param>
+            <param name="ContentType">The file's content type to be posted when uploading the file.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.ArtifactUploadDto.#ctor(System.Uri,System.String)">
+            <summary>
+            Contains information required to upload an artifact to storage.
+            </summary>
+            <param name="UploadUri">The uri to which the file should be uploaded, using the `PUT` method.</param>
+            <param name="ContentType">The file's content type to be posted when uploading the file.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.ArtifactUploadDto.UploadUri">
+            <summary>The uri to which the file should be uploaded, using the `PUT` method.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.ArtifactUploadDto.ContentType">
+            <summary>The file's content type to be posted when uploading the file.</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.DataSetDto">
+            <summary>
+            An object containing all properties of a dataset.
+            </summary>
+            <param name="Id">The dataset identifier.</param>
+            <param name="Name">The dataset name.</param>
+            <param name="Versions">The dataset versions.</param>
+            <param name="WorkspaceId">The workspace identifier under which this dataset was created.</param>
+            <param name="Metadata">The dataset metadata.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.DataSetDto.#ctor(System.String,System.String,Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto[],System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+            <summary>
+            An object containing all properties of a dataset.
+            </summary>
+            <param name="Id">The dataset identifier.</param>
+            <param name="Name">The dataset name.</param>
+            <param name="Versions">The dataset versions.</param>
+            <param name="WorkspaceId">The workspace identifier under which this dataset was created.</param>
+            <param name="Metadata">The dataset metadata.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetDto.Id">
+            <summary>The dataset identifier.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetDto.Name">
+            <summary>The dataset name.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetDto.Versions">
+            <summary>The dataset versions.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetDto.WorkspaceId">
+            <summary>The workspace identifier under which this dataset was created.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetDto.Metadata">
+            <summary>The dataset metadata.</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.CreateDataSetRequest">
+            <summary>
+            An object containing the properties required to create a new dataset.
+            </summary>
+            <param name="Name">The dataset name.</param>
+            <param name="Metadata">An arbitrary object containing custom metadata.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.CreateDataSetRequest.#ctor(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            An object containing the properties required to create a new dataset.
+            </summary>
+            <param name="Name">The dataset name.</param>
+            <param name="Metadata">An arbitrary object containing custom metadata.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CreateDataSetRequest.Name">
+            <summary>The dataset name.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CreateDataSetRequest.Metadata">
+            <summary>An arbitrary object containing custom metadata.</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.UpdateDataSetRequest">
+            <summary>
+            An object containing the properties required to update an existing dataset.
+            </summary>
+            <param name="Name">The dataset name.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.UpdateDataSetRequest.#ctor(System.String)">
+            <summary>
+            An object containing the properties required to update an existing dataset.
+            </summary>
+            <param name="Name">The dataset name.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.UpdateDataSetRequest.Name">
+            <summary>The dataset name.</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.UpdateDataSetVersionRequest">
+            <summary>
+            An object containing the required information to update an existing dataset version.
+            </summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.UpdateDataSetVersionRequest.IsPublic">
+            <summary>
+            Whether this dataset version should be accessible to everyone.
+            </summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.CreateDataSetVersionRequest">
+            <summary>
+            An object containing the required information to create a dataset version.
+            </summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CreateDataSetVersionRequest.Metadata">
+            <summary>
+            A map of objects containing arbitrary metadata to be attached to the dataset version.
+            </summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.CommitDataSetVersionRequest">
+            <summary>
+            A request used to commit a dataset version.
+            </summary>
+            <param name="Comment">A description of the commit.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.CommitDataSetVersionRequest.#ctor(System.String)">
+            <summary>
+            A request used to commit a dataset version.
+            </summary>
+            <param name="Comment">A description of the commit.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CommitDataSetVersionRequest.Comment">
+            <summary>A description of the commit.</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto">
+            <summary>
+            An object containing information about a dataset version.
+            </summary>
+            <param name="Id">The dataset version identifier.</param>
+            <param name="VersionNumber">The version number, only available for versions that have been committed.</param>
+            <param name="Comment">The description submitted at commit time.</param>
+            <param name="CommittedOn">The timestamp at which this version was committed.</param>
+            <param name="IsPublic">Whether this version is visible to users that are not logged in.</param>
+            <param name="Metadata">The metadata attached to this version.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto.#ctor(System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.DateTime},System.Boolean,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+            <summary>
+            An object containing information about a dataset version.
+            </summary>
+            <param name="Id">The dataset version identifier.</param>
+            <param name="VersionNumber">The version number, only available for versions that have been committed.</param>
+            <param name="Comment">The description submitted at commit time.</param>
+            <param name="CommittedOn">The timestamp at which this version was committed.</param>
+            <param name="IsPublic">Whether this version is visible to users that are not logged in.</param>
+            <param name="Metadata">The metadata attached to this version.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto.Id">
+            <summary>The dataset version identifier.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto.VersionNumber">
+            <summary>The version number, only available for versions that have been committed.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto.Comment">
+            <summary>The description submitted at commit time.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto.CommittedOn">
+            <summary>The timestamp at which this version was committed.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto.IsPublic">
+            <summary>Whether this version is visible to users that are not logged in.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto.Metadata">
+            <summary>The metadata attached to this version.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.DataSetVersionDto.IsReadOnly">
+            <summary>
+            Whether this version is readonly.
+            </summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.JobPhase">
+            <summary>
+            Contains information about the workflow phase.
+            </summary>
+        </member>
+        <member name="F:Unity.DigitalTwins.WorkspaceService.Models.JobPhase.Pending">
+            <summary>The workflow job is pending</summary>
+        </member>
+        <member name="F:Unity.DigitalTwins.WorkspaceService.Models.JobPhase.Running">
+            <summary>The workflow job is running</summary>
+        </member>
+        <member name="F:Unity.DigitalTwins.WorkspaceService.Models.JobPhase.Succeeded">
+            <summary>The workflow job has completed successfully</summary>
+        </member>
+        <member name="F:Unity.DigitalTwins.WorkspaceService.Models.JobPhase.Failed">
+            <summary>The workflow job failed to complete successfully</summary>
+        </member>
+        <member name="F:Unity.DigitalTwins.WorkspaceService.Models.JobPhase.Unknown">
+            <summary>The workflow job phase is unknown</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.JobStatusDto">
+            <summary>
+            Contains information related to a workflow job status.
+            </summary>
+            <param name="Phase">a high-level summary of where the workflow is in its lifecycle, can be "pending", "running", "succeeded", "failed".</param>
+            <param name="StartedAt">The time at which the job started.</param>
+            <param name="FinishedAt">The time at which the job finished.</param>
+            <param name="Progress">The progress to completion (0.0 to 1.0).</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.JobStatusDto.#ctor(Unity.DigitalTwins.WorkspaceService.Models.JobPhase,System.DateTime,System.Nullable{System.DateTime},System.Single)">
+            <summary>
+            Contains information related to a workflow job status.
+            </summary>
+            <param name="Phase">a high-level summary of where the workflow is in its lifecycle, can be "pending", "running", "succeeded", "failed".</param>
+            <param name="StartedAt">The time at which the job started.</param>
+            <param name="FinishedAt">The time at which the job finished.</param>
+            <param name="Progress">The progress to completion (0.0 to 1.0).</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.JobStatusDto.Phase">
+            <summary>a high-level summary of where the workflow is in its lifecycle, can be "pending", "running", "succeeded", "failed".</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.JobStatusDto.StartedAt">
+            <summary>The time at which the job started.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.JobStatusDto.FinishedAt">
+            <summary>The time at which the job finished.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.JobStatusDto.Progress">
+            <summary>The progress to completion (0.0 to 1.0).</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.JobDto">
+            <summary>
+            Contains information related to a workflow job.
+            </summary>
+            <param name="Name">The name of the job.</param>
+            <param name="Id">The unique id of the job.</param>
+            <param name="Status">The status of the job.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.JobDto.#ctor(System.String,System.String,Unity.DigitalTwins.WorkspaceService.Models.JobStatusDto)">
+            <summary>
+            Contains information related to a workflow job.
+            </summary>
+            <param name="Name">The name of the job.</param>
+            <param name="Id">The unique id of the job.</param>
+            <param name="Status">The status of the job.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.JobDto.Name">
+            <summary>The name of the job.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.JobDto.Id">
+            <summary>The unique id of the job.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.JobDto.Status">
+            <summary>The status of the job.</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.CreateWorkspaceRequest">
+            <summary>
+            An object containing the parameters required to create a new workspace.
+            </summary>
+            <param name="Name">The workspace name.</param>
+            <param name="OrgId">The organization this workspace belongs to. This can either be the name or the identifier of the organization.</param>
+            <param name="Metadata">A map of objects containing arbitrary metadata to be attached to the workspace.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.CreateWorkspaceRequest.#ctor(System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            An object containing the parameters required to create a new workspace.
+            </summary>
+            <param name="Name">The workspace name.</param>
+            <param name="OrgId">The organization this workspace belongs to. This can either be the name or the identifier of the organization.</param>
+            <param name="Metadata">A map of objects containing arbitrary metadata to be attached to the workspace.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CreateWorkspaceRequest.Name">
+            <summary>The workspace name.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CreateWorkspaceRequest.OrgId">
+            <summary>The organization this workspace belongs to. This can either be the name or the identifier of the organization.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.CreateWorkspaceRequest.Metadata">
+            <summary>A map of objects containing arbitrary metadata to be attached to the workspace.</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.UpdateWorkspaceRequest">
+            <summary>
+            An object containing the parameters required to update an existing workspace.
+            </summary>
+            <param name="Name">The name of the workspace</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.UpdateWorkspaceRequest.#ctor(System.String)">
+            <summary>
+            An object containing the parameters required to update an existing workspace.
+            </summary>
+            <param name="Name">The name of the workspace</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.UpdateWorkspaceRequest.Name">
+            <summary>The name of the workspace</summary>
+        </member>
+        <member name="T:Unity.DigitalTwins.WorkspaceService.Models.WorkspaceDto">
+            <summary>
+            An object representing a workspace.
+            </summary>
+            <param name="Id">The workspace identifier.</param>
+            <param name="Name">The workspace name.</param>
+            <param name="OrgId">The organization this workspace belongs to.</param>
+            <param name="Metadata">The workspace metadata.</param>
+        </member>
+        <member name="M:Unity.DigitalTwins.WorkspaceService.Models.WorkspaceDto.#ctor(System.String,System.String,System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+            <summary>
+            An object representing a workspace.
+            </summary>
+            <param name="Id">The workspace identifier.</param>
+            <param name="Name">The workspace name.</param>
+            <param name="OrgId">The organization this workspace belongs to.</param>
+            <param name="Metadata">The workspace metadata.</param>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.WorkspaceDto.Id">
+            <summary>The workspace identifier.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.WorkspaceDto.Name">
+            <summary>The workspace name.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.WorkspaceDto.OrgId">
+            <summary>The organization this workspace belongs to.</summary>
+        </member>
+        <member name="P:Unity.DigitalTwins.WorkspaceService.Models.WorkspaceDto.Metadata">
+            <summary>The workspace metadata.</summary>
+        </member>
+    </members>
+</doc>

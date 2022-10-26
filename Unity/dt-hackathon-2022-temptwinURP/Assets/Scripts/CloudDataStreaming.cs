@@ -11,7 +11,7 @@ using Unity.DigitalTwins.Common.Runtime;
 [RequireComponent(typeof(DataStreamingBehaviour))]
 public class CloudDataStreaming : MonoBehaviour
 {
-    public string SceneName = "TempTwinHackweek2022";
+    public string DefaultScene = "TempTwinHackweek2022";
 
     CloudConfiguration m_CloudConfiguration;
     UnityHttpClient m_HttpClient;
@@ -32,17 +32,22 @@ public class CloudDataStreaming : MonoBehaviour
         // We will get our data from this service.
         m_Service = new ServiceHttpClient(m_HttpClient, m_Authenticator, DigitalTwinsPlayerSettings.Instance);
 
-        // Retrieving our uploaded scene through the available Scenes.
-        var sceneProvider = new SceneProvider(m_Service, m_CloudConfiguration);
-        var sceneList = await sceneProvider.ListScenesAsync();
-        var scene = sceneList.First(each => each.Name == SceneName);
-
-        var dataStreaming = gameObject.GetComponent<DataStreamingBehaviour>();
-        dataStreaming.OpenScene(scene, m_Service, m_CloudConfiguration);
+        LoadScene(DefaultScene);
     }
 
     void OnDestroy()
     {
         m_Authenticator?.Dispose();
+    }
+
+    public async void LoadScene(string name) {
+
+        // Retrieving our uploaded scene through the available Scenes.
+        var sceneProvider = new SceneProvider(m_Service, m_CloudConfiguration);
+        var sceneList = await sceneProvider.ListScenesAsync();
+        var scene = sceneList.First(each => each.Name == name);
+
+        var dataStreaming = gameObject.GetComponent<DataStreamingBehaviour>();
+        dataStreaming.OpenScene(scene, m_Service, m_CloudConfiguration);
     }
 }

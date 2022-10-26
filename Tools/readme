@@ -1,0 +1,13 @@
+1. Unzip file
+2. Open a command prompt inside the unzipped folder
+3. Run uploaddir "{my-local-folder}" {personal-access-token} {org-name} {workspace-name} {dataset-name}
+	a. The local folder should be where you built your WebGL build, i.e. where there is an "index.html" file
+4. Grab the url from the console (after "Transaction")
+5. Append "/artifacts/index.html" to the url
+4. Append "-proxy" to "artifacts" in the url
+
+for example:
+https://dt.unity.com/api/datasets/9c9d7c2b-e747-44fd-ad80-0cddf835282e/versions/b72d7d76-f70b-4878-ad72-8feeffbf3ef0/artifacts/index.html
+
+becomes:
+https://dt.unity.com/api/datasets/9c9d7c2b-e747-44fd-ad80-0cddf835282e/versions/b72d7d76-f70b-4878-ad72-8feeffbf3ef0/artifacts-proxy/index.html
