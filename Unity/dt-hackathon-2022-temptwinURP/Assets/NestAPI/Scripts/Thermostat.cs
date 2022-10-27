@@ -26,6 +26,10 @@ namespace Assets.NestAPI.Scripts
         public static string deviceId = "AVPHwEvrbIwSsnElHCEZ1YP4sTY58NdiZCNs-4a3wUhq1K1YnlEC5kSfzrDOaAvct9rZKU9P3wwFCuy4ph-qGQjpid0MZg";
         ThermostatTraits traits = new ThermostatTraits();
         public float timer = 60f;
+        public bool setHeat = false;
+        public float setHeatTimer = 8f;
+        public bool setMode = false;
+        public float setModeTimer = 5f;
 
         private void Update()
         {
@@ -38,6 +42,43 @@ namespace Assets.NestAPI.Scripts
                 GetThermostatInfo();
                 timer = 60f;
             }
+
+            if (setHeat && setHeatTimer < 0)
+            {
+                var setTempUp = new RequestHelper
+                {
+                    Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
+                    EnableDebug = true,
+                    BodyString = "{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + traits.TemperatureSetpoint + "}}"
+                };
+                RestClient.Post(setTempUp)
+                    .Then(res => { })
+                    .Catch(err => LogMessage("Error", err.Message));
+                setHeatTimer = 8f;
+                setHeat = false;
+
+            }
+            else setHeatTimer -= Time.deltaTime;
+
+            if (setMode && setModeTimer < 0)
+            {
+                // Create a new request to set thermostat mode
+                var setThermostatToHeating = new RequestHelper
+                {
+                    Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
+                    EnableDebug = true,
+                    BodyString = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"" + traits.ThermostatMode + "\"}}"
+                };
+                RestClient.Post(setThermostatToHeating)
+                    .Then(res =>
+                    {
+
+                    })
+                    .Catch(err => LogMessage("Error", err.Message));
+                setModeTimer = 5f;
+                setMode = false;
+            }
+            else setModeTimer -= Time.deltaTime;
         }
 
         private void Awake()
@@ -63,74 +104,32 @@ namespace Assets.NestAPI.Scripts
 
         public void SetTempUp()
         {
-            var newTemp = double.Parse(traits.Temperature) + 3;
-            var setTempUp = new RequestHelper
-            {
-                Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
-                EnableDebug = true,
-                BodyString = "{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + newTemp + "}}"
-            };
-            RestClient.Post(setTempUp)
-                .Then(res =>
-                {
-                    traits.TemperatureSetpoint = newTemp.ToString("F2");
-                    SetTemperaturePoint.text = traits.TemperatureSetpoint;
-                })
-                .Catch(err => LogMessage("Error", err.Message));
+            var newTemp = float.Parse(traits.TemperatureSetpoint) + 1;
+            traits.TemperatureSetpoint = newTemp.ToString("F2");
+            SetTemperaturePoint.text = traits.TemperatureSetpoint;
+            setHeat = true;
         }
 
         public void SetTempDown()
         {
-            var newTemp = double.Parse(traits.Temperature) - 3;
-            var setTempDown = new RequestHelper
-            {
-                Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
-                EnableDebug = true,
-                BodyString = "{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + newTemp + "}}"
-            };
-            RestClient.Post(setTempDown)
-                .Then(res =>
-                {
-                    traits.TemperatureSetpoint = newTemp.ToString("F2");
-                    SetTemperaturePoint.text = traits.TemperatureSetpoint;
-                })
-                .Catch(err => LogMessage("Error", err.Message));
+            var newTemp = float.Parse(traits.TemperatureSetpoint) - 1;
+            traits.TemperatureSetpoint = newTemp.ToString("F2");
+            SetTemperaturePoint.text = traits.TemperatureSetpoint;
+            setHeat = true;
         }
 
         public void SetHeating()
         {
-            // Create a new request to set thermostat mode
-            var setThermostatToHeating = new RequestHelper
-            {
-                Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
-                EnableDebug = true,
-                BodyString = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"HEAT\"}}"
-            };
-            RestClient.Post(setThermostatToHeating)
-                .Then(res =>
-                {
-                    traits.ThermostatMode = "HEAT";
-                    Mode.text = traits.ThermostatMode;
-                })
-                .Catch(err => LogMessage("Error", err.Message));
+            traits.ThermostatMode = "HEAT";
+            Mode.text = traits.ThermostatMode;
+            setMode = true;
         }
-        
+
         public void Off()
-        {
-            // Create a new request to set thermostat mode
-            var turnOffThermostat = new RequestHelper
-            {
-                Uri = GoogleUrls.Enterprise + $"/{projectId}/devices/{deviceId}:executeCommand",
-                EnableDebug = true,
-                BodyString = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"OFF\"}}"
-            };
-            RestClient.Post(turnOffThermostat)
-        .Then(res =>
         {
             traits.ThermostatMode = "OFF";
             Mode.text = traits.ThermostatMode;
-        })
-        .Catch(err => LogMessage("Error", err.Message));
+            setMode = true;
         }
 
         public void GetThermostatInfo()
@@ -147,7 +146,7 @@ namespace Assets.NestAPI.Scripts
                 Mode.text = traits.ThermostatMode;
                 Humidity.text = traits.Humidity;
                 Temperature.text = float.Parse(traits.Temperature).ToString("F2");
-                SetTemperaturePoint.text = float.Parse(traits.TemperatureSetpoint).ToString("F2");
+                if(traits.TemperatureSetpoint != null) SetTemperaturePoint.text = float.Parse(traits.TemperatureSetpoint).ToString("F2");
 
             }).Catch(err => LogMessage("Error", err.Message));
         }
