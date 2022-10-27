@@ -390,6 +390,11 @@ PrefabInstance:
       propertyPath: m_LookAt
       value: 
       objectReference: {fileID: 461166260686518787}
+    - target: {fileID: 7976548783494877260, guid: 69d5eefba40dc974ebe864887df0175b,
+        type: 3}
+      propertyPath: m_Priority
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8218791610849797377, guid: 69d5eefba40dc974ebe864887df0175b,
         type: 3}
       propertyPath: m_Follow
