@@ -40,7 +40,32 @@ public class CollidersManagers : MonoBehaviour
 
     void OnObjectCreated(GameObjectIdentifier obj)
     {
-        AddColliders(obj.GameObject);
+        bool addCollider = true;
+        Metadata md = obj.GameObject.GetComponent<Metadata>();
+        if (md) 
+        {
+            /*foreach (var m in md.GetParameters()) {
+                Debug.Log(m);
+            }*/
+            string val = null;
+            if (md.TryGetValue("Materials and Finishes/Material", out val)) {
+                if (val == "Glass") {
+                    addCollider = false;
+                }
+            }
+            if (md.TryGetValue("Identity Data/OmniClass Title", out val)) {
+                if (val == "Doors") {
+                    addCollider = false;
+                }
+            }
+            if (md.TryGetValue("Other/Category", out val)) {
+                if (val == "Doors") {
+                    addCollider = false;
+                }
+            }
+        }
+        if(addCollider)
+            AddColliders(obj.GameObject);
     }
 
     void AddColliders()
