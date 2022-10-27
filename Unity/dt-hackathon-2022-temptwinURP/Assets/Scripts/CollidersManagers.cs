@@ -85,7 +85,7 @@ public class CollidersManagers : MonoBehaviour {
 
     void Update()
     {
-        m_hydroConn.SetActive(Vector3.Distance(m_Character.transform.position, m_hydroConn.transform.position) < m_Distance);
+        m_hydroConn?.SetActive(Vector3.Distance(m_Character.transform.position, m_hydroConn.transform.position) < m_Distance);
     }
 
     void AddColliders()
