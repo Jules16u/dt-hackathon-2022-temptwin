@@ -5,8 +5,16 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using TMPro;
 
 public class HydroConnection : MonoBehaviour {
+
+    [SerializeField]
+    TMP_Text infoText;
+
+    public float updateTimer = 5f;
+    private float m_Timer = 0f;
+    private bool m_Connected = false;
 
     private Uri u = new Uri("ws://localhost:8080");
     private ClientWebSocket cws = null;
@@ -20,19 +28,29 @@ public class HydroConnection : MonoBehaviour {
         cws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
     }
 
+    private void Update() {
+        m_Timer += Time.deltaTime;
+        if(m_Timer > updateTimer) {
+            m_Timer = 0f;
+            SendServerMessage("Daily_Consumption");
+        }
+    }
+
     async void Connect() {
         cws = new ClientWebSocket();
         try {
             await cws.ConnectAsync(u, CancellationToken.None);
             if (cws.State == WebSocketState.Open) Debug.Log("connected");
-            TestMessage();
+            m_Connected = true;
+            SendServerMessage("Daily_Consumption");
             GetNextMessage();
         }
         catch (Exception e) { Debug.Log("woe " + e.Message); }
     }
 
-    async void TestMessage() {
-        ArraySegment<byte> b = new ArraySegment<byte>(Encoding.UTF8.GetBytes("TestMessage"));
+    async void SendServerMessage(string msg) {
+        if (!m_Connected) return;
+        ArraySegment<byte> b = new ArraySegment<byte>(Encoding.UTF8.GetBytes(msg));
         await cws.SendAsync(b, WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
@@ -46,6 +64,7 @@ public class HydroConnection : MonoBehaviour {
 
         string msg = Encoding.UTF8.GetString(buf.Array, 0, r.Count);
         Debug.Log(msg);
+        infoText.text = msg + " kWh";
         /*int split_index = msg.IndexOf(':');
         if (split_index > 0) {
             string username = msg.Substring(0, split_index);

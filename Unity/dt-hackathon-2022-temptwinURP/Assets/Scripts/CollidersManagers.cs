@@ -6,11 +6,14 @@ using Unity.DigitalTwins.DataStreaming.Runtime;
 using UnityEngine;
 using Metadata = Unity.DigitalTwins.DataStreaming.Runtime.Metadata;
 
-public class CollidersManagers : MonoBehaviour
-{
+public class CollidersManagers : MonoBehaviour {
     [Header("References")]
     [SerializeField]
     ActorGraph m_ActorGraph;
+
+    [SerializeField]
+    GameObject m_HydroPrefab;
+    private bool m_hydroSpawned = false;
 
     Dictionary<GameObject, MeshCollider> m_MeshCollidersDictionary = new Dictionary<GameObject, MeshCollider>();
 
@@ -63,8 +66,16 @@ public class CollidersManagers : MonoBehaviour
                     addCollider = false;
                 }
             }
+            if (!m_hydroSpawned && md.TryGetValue("Identity Data/Type Name", out val)) {
+                if (val == "Main_Electrical_Panel_with_Meter_20852") {
+                    Debug.Log("Found Hydro panel, spawning info panel");
+                    GameObject hydroConn = Instantiate(m_HydroPrefab, obj.GameObject.transform);
+                    hydroConn.transform.localPosition = new Vector3(0.0f, 1f, 0.5f); // small offset to prevent spawning in wall
+                    m_hydroSpawned = true;
+                }
+            }
         }
-        if(addCollider)
+        if (addCollider)
             AddColliders(obj.GameObject);
     }
 
