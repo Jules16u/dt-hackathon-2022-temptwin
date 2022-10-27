@@ -454,7 +454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d1303dc7b94b453fa95e32002d46e6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SceneName: TempTwinHackweek2022
+  SceneName: TempTwinHackweekFinal
 --- !u!114 &993682735 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3628710140261178558, guid: af1dbd705f4cd4b7194a9d54c315c62c,
@@ -647,7 +647,7 @@ PrefabInstance:
     - target: {fileID: 8944336655422409496, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
       propertyPath: far clip plane
-      value: 500
+      value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409496, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
