@@ -10,10 +10,14 @@ public class CollidersManagers : MonoBehaviour {
     [Header("References")]
     [SerializeField]
     ActorGraph m_ActorGraph;
-
+    [SerializeField]
+    GameObject m_Character;
     [SerializeField]
     GameObject m_HydroPrefab;
-    private bool m_hydroSpawned = false;
+    bool m_hydroSpawned = false;
+    GameObject m_hydroConn;
+
+    float m_Distance = 5;
 
     Dictionary<GameObject, MeshCollider> m_MeshCollidersDictionary = new Dictionary<GameObject, MeshCollider>();
 
@@ -69,14 +73,19 @@ public class CollidersManagers : MonoBehaviour {
             if (!m_hydroSpawned && md.TryGetValue("Identity Data/Type Name", out val)) {
                 if (val == "Main_Electrical_Panel_with_Meter_20852") {
                     Debug.Log("Found Hydro panel, spawning info panel");
-                    GameObject hydroConn = Instantiate(m_HydroPrefab, obj.GameObject.transform);
-                    hydroConn.transform.localPosition = new Vector3(0.0f, 1f, 0.5f); // small offset to prevent spawning in wall
+                    m_hydroConn = Instantiate(m_HydroPrefab, obj.GameObject.transform);
+                    m_hydroConn.transform.localPosition = new Vector3(0.0f, 1f, 0.5f); // small offset to prevent spawning in wall
                     m_hydroSpawned = true;
                 }
             }
         }
         if (addCollider)
             AddColliders(obj.GameObject);
+    }
+
+    void Update()
+    {
+        m_hydroConn.SetActive(Vector3.Distance(m_Character.transform.position, m_hydroConn.transform.position) < m_Distance);
     }
 
     void AddColliders()
