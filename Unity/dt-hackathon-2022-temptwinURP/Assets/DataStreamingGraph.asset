@@ -5198,7 +5198,7 @@ MonoBehaviour:
         Root: {fileID: 0}
         IsLiveSyncEnabled: 0
         UseSpatialManifest: 1
-        UseHlods: 1
+        UseHlods: 0
         HlodDelayMode: 2
         Prioritizer: 5
         MaxInstanceCountLegacy: 100000
