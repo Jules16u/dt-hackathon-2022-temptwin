@@ -39,6 +39,8 @@ public class CloudDataStreaming : MonoBehaviour
 
         var dataStreaming = gameObject.GetComponent<DataStreamingBehaviour>();
         dataStreaming.OpenScene(scene, m_Service, m_CloudConfiguration);
+        
+        Debug.Log("test: " + dataStreaming.HasOpenedProject);
     }
 
     void OnDestroy()
