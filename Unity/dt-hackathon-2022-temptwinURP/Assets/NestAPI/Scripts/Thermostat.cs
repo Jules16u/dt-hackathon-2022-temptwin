@@ -71,12 +71,12 @@ namespace Assets.NestAPI.Scripts
                 BodyString = "{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + newTemp + "}}"
             };
             RestClient.Post(setTempUp)
-        .Then(res =>
-        {
-            traits.TemperatureSetpoint = newTemp.ToString();
-            SetTemperaturePoint.text = traits.TemperatureSetpoint;
-        })
-        .Catch(err => LogMessage("Error", err.Message));
+                .Then(res =>
+                {
+                    traits.TemperatureSetpoint = newTemp.ToString("F2");
+                    SetTemperaturePoint.text = traits.TemperatureSetpoint;
+                })
+                .Catch(err => LogMessage("Error", err.Message));
         }
 
         public void SetTempDown()
@@ -89,12 +89,12 @@ namespace Assets.NestAPI.Scripts
                 BodyString = "{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + newTemp + "}}"
             };
             RestClient.Post(setTempDown)
-        .Then(res =>
-        {
-            traits.TemperatureSetpoint = newTemp.ToString();
-            SetTemperaturePoint.text = traits.TemperatureSetpoint;
-        })
-        .Catch(err => LogMessage("Error", err.Message));
+                .Then(res =>
+                {
+                    traits.TemperatureSetpoint = newTemp.ToString("F2");
+                    SetTemperaturePoint.text = traits.TemperatureSetpoint;
+                })
+                .Catch(err => LogMessage("Error", err.Message));
         }
 
         public void SetHeating()
@@ -107,14 +107,14 @@ namespace Assets.NestAPI.Scripts
                 BodyString = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"HEAT\"}}"
             };
             RestClient.Post(setThermostatToHeating)
-        .Then(res =>
-        {
-            traits.ThermostatMode = "HEAT";
-            Mode.text = traits.ThermostatMode;
-        })
-        .Catch(err => LogMessage("Error", err.Message));
+                .Then(res =>
+                {
+                    traits.ThermostatMode = "HEAT";
+                    Mode.text = traits.ThermostatMode;
+                })
+                .Catch(err => LogMessage("Error", err.Message));
         }
-
+        
         public void Off()
         {
             // Create a new request to set thermostat mode
@@ -146,8 +146,8 @@ namespace Assets.NestAPI.Scripts
                 ParseTraits(res.Text);
                 Mode.text = traits.ThermostatMode;
                 Humidity.text = traits.Humidity;
-                Temperature.text = traits.Temperature;
-                SetTemperaturePoint.text = traits.TemperatureSetpoint;
+                Temperature.text = float.Parse(traits.Temperature).ToString("F2");
+                SetTemperaturePoint.text = float.Parse(traits.TemperatureSetpoint).ToString("F2");
 
             }).Catch(err => LogMessage("Error", err.Message));
         }

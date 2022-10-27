@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1512118196}
   - component: {fileID: 1512118195}
   m_Layer: 8
-  m_Name: Origine
+  m_Name: Origin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1376,7 +1376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c835f7166a4bf40bf3b7b1963100c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FireOrigine: {fileID: 1512118194}
+  m_FireOrigin: {fileID: 1512118194}
 --- !u!1 &4523139366846529165
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ using UnityEngine;
 public class CharacterColliderManager : MonoBehaviour
 {
     [SerializeField]
-    Transform m_FireOrigine;
+    Transform m_FireOrigin;
     // Update is called once per frame
     void Update()
     {
@@ -19,7 +19,7 @@ public class CharacterColliderManager : MonoBehaviour
     void OnCollisionHit()
     {
         RaycastHit hit;
-        Ray ray = new Ray(m_FireOrigine.position, m_FireOrigine.forward * 2f);
+        Ray ray = new Ray(m_FireOrigin.position, m_FireOrigin.forward * 2f);
 
         if (Physics.Raycast(ray, out hit))
         {
